@@ -45,34 +45,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     PermissionDao permissionDao;
 
-    @Bean
-    UserDetailsService customUserService(){
-        return new MyCustomUserService();
-    }
+//    @Bean
+//    UserDetailsService customUserService(){
+//        return new MyCustomUserService();
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        /*http.authorizeRequests()
-                .antMatchers("/", "/home").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();*/
         http.authorizeRequests()
                 .antMatchers("/static").permitAll()
-                .anyRequest().authenticated() //任何请求,登录后可以访问
+                .antMatchers("/api/private**").authenticated() //任何请求,登录后可以访问
                 .and()
                 .formLogin()
-                .loginPage("/login")
-                .failureUrl("/login?error")
+                .loginProcessingUrl("/login")
+                .usernameParameter("username")
+                .passwordParameter("password")
                 .permitAll() //登录页面用户任意访问
                 .and()
-                .logout().permitAll(); //注销行为任意访问
-        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
+                .logout().permitAll()//注销行为任意访问
+                .and().csrf().disable();
+        //http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
     }
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
